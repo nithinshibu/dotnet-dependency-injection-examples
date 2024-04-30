@@ -1,0 +1,36 @@
+﻿
+//builder.Services.AddDistributedMemoryCache();
+
+//builder.Services.AddSession();
+
+app.UseSession();
+
+private readonly RectangleService _rectangleService;
+
+        public RectangleController(RectangleService rectangleService)
+        {
+            _rectangleService = rectangleService; // Dependency injected via constructor
+        }
+
+        [HttpGet]
+        public ActionResult<string> DisplayGUID()
+        {
+            
+            string currentGUID = GetCurrentCountFromSession();
+            string guidValue = _rectangleService.GetGuidAsString();
+            SetCurrentCountInSession(guidValue);
+
+            return Ok(new { CurrentGUID = currentGUID, NewGuid = guidValue });
+        }
+
+        private string GetCurrentCountFromSession()
+        {
+            string? currentCount = HttpContext.Session.GetString("CurrentGUID");
+            return currentCount ?? "Not Found";
+        }
+
+        private void SetCurrentCountInSession(string guid)
+        {
+            HttpContext.Session.SetString("CurrentGUID", guid);
+        }
+
